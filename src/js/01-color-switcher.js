@@ -17,15 +17,18 @@ function getRandomHexColor() {
 }
 
 function onStart() {
-    refs.buttonStart.disabled = true;
-    refs.buttonStop.disabled = false;
+    buttonTogle(true);
     timerId = setInterval(() => {
         refs.body.style.backgroundColor = getRandomHexColor();  
     }, 1000);
 }
 
 function onStop() {
-    refs.buttonStart.disabled = false;
+    buttonTogle(false);
     clearInterval(timerId);
-    refs.buttonStop.disabled = true;
+}
+
+function buttonTogle(boolValue) {
+    refs.buttonStart.disabled = boolValue;
+    refs.buttonStop.disabled = !boolValue;
 }

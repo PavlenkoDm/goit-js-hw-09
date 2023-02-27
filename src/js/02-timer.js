@@ -19,10 +19,10 @@ const options = {
     minuteIncrement: 1,
     enableSeconds: true,
 
-    onClose(selectedDates) {
-        if (selectedDates[0].getTime() <= Date.now()) {
+    onClose([selectedDates]) {
+        if (selectedDates.getTime() <= Date.now()) {
             Notify.failure("Please choose a date in the future");
-            refs.buttonStart.setAttribute("disabled", true);
+            setDisabledAttribute();
             return;
         }
         refs.buttonStart.removeAttribute("disabled");
@@ -32,7 +32,7 @@ const options = {
 
 flatpickr('#datetime-picker', options);
 
-refs.buttonStart.setAttribute("disabled", true);
+setDisabledAttribute();
 refs.buttonStart.addEventListener('click', onStart);
 
 
@@ -51,6 +51,7 @@ function onStart() {
         if (deltaTime <= 0) {
             clearInterval(timerId);
             Notify.success('Time is over');
+            setDisabledAttribute();
             return;
         }
 
@@ -64,10 +65,10 @@ function onStart() {
 
 function pageTimerUpdater(timeObj) {
     const { days, hours, minutes, seconds } = convertMs(timeObj);
-    refs.days.textContent = days;
-    refs.hours.textContent = hours;
-    refs.minutes.textContent = minutes;
-    refs.seconds.textContent = seconds;
+    refs.days.textContent = addLeadingZero(days);
+    refs.hours.textContent = addLeadingZero(hours);
+    refs.minutes.textContent = addLeadingZero(minutes);
+    refs.seconds.textContent = addLeadingZero(seconds);
 }
 
 
@@ -84,13 +85,18 @@ function convertMs(ms) {
   const day = hour * 24;
 
   // Remaining days
-  const days = addLeadingZero(Math.floor(ms / day));
+  const days = Math.floor(ms / day);
   // Remaining hours
-  const hours = addLeadingZero(Math.floor((ms % day) / hour));
+  const hours = Math.floor((ms % day) / hour);
   // Remaining minutes
-  const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
+  const minutes = Math.floor(((ms % day) % hour) / minute);
   // Remaining seconds
-  const seconds = addLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
+}
+
+
+function setDisabledAttribute() {
+    refs.buttonStart.setAttribute("disabled", true);
 }
